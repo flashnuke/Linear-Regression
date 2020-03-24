@@ -195,26 +195,15 @@ class Model(DataSet):
 
 
 if __name__ == "__main__":
-    andrewsdataset = load_data("ex1data1.txt")
-    dataset_array2 = np.array([[2, 5],
+    andrewsdataset = load_data("ex1data1.txt")  # import external dataset
+    dataset_array2 = np.array([[2, 5],  # testing a small dataset
                                [3, 7],
                                [4, 9],
                                [5, 11]], dtype=float)
 
-    mod = Model(dataset_array2, normalization=False, regularization=False, lmbda=0.03)
-
-    print(mod.r2)
+    mod = Model(dataset_array2, normalization=True)
     mod.visualize(save=True)
-    print(mod.opt_theta)
-    # print(mod)
-    # print(mod.hypothesis)
-    # print(mod.stds)
-    # print(mod.jlist)
-    print(mod.mse)
-    # print(mod.iter_num)
-    #
+    
     featuersss = np.array([[10.0],
                            [11.0]], dtype=float)
     result = mod.predict(featuersss)
-    print(result)
-    # print(mod.x)
