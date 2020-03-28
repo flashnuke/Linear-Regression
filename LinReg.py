@@ -1,8 +1,21 @@
+"""
+This module will be used to process data and try to create a linear regression model based on it
+The following methods will be available:
+Importing a data set from a text file
+Normalization - scaling all features to be have a mean of 0 and dividing by standard deviation
+Regularization - smoothing out the line to avoid over-fitting
+Setting custom initial weights (theta), lambda (regularization), number of iterations, convergence, etc...
+Note that this model creation supports multivariate linear regression as well as single variable.
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 
 
 def load_data(path: str) -> np.array:
+    """
+    Import features from a text file that has them stored in the following format: x1, x2
+    the format of the examples matrix will be numpy.array
+    """
     dataset = open(f"{path}", "r")
     dataset_list = []
     for example in dataset:
@@ -12,6 +25,11 @@ def load_data(path: str) -> np.array:
 
 
 class DataSet:  # pass a matrix of (dimensions = [examples*features])
+    """
+    Every model instantiation will go through here to give the data set an initial processing.
+    Checking the format of the input, defining whether regularization is used, scaling
+    all features using normalization if set to True, and adding bias unit '1' as x0.
+    """
     def __init__(self, data_set: np.array, theta: list = None, normalization: bool = False,
                  regularization: bool = False, lmbda: float = 0.3):
         if not isinstance(data_set, np.ndarray):
@@ -68,6 +86,15 @@ class DataSet:  # pass a matrix of (dimensions = [examples*features])
 
 
 class Model(DataSet):
+    """
+    This class builds the model. The method used here is gradient descend with the intention of minimizing the
+    cost function value. Note that all cost function values are stored in a special list.
+    Eventually the model object will have a representation of the hypothesis function in a string format,
+    and many attributes that represent the model's properties, such as "mse", "r squared", intercept
+    and cost function value.
+    Note that this model is considered to have been converged after error1/error2 are less than 'convergence' value.
+    'Convergence' value is 1.000000001 by default but can be given another value to achieve better or worse precision.
+    """
     def __init__(self, data_set: np.array, theta: list = None, normalization: bool = False,
                  regularization: bool = False, lmbda: float = 0.3, alpha: float = 0.01,
                  iters: int = 10000, convergence: float = 1.000000001):
@@ -97,6 +124,7 @@ class Model(DataSet):
         return h.reshape(self.y.shape[0], 1)  # returns prediction for each sample
 
     def _costfunction(self, error):
+        """This is the cost function. Note that are values are stored in a special list. Last value is index[-1]"""
         error = error**2
         j = 0.5*(1/self.m)*error  # returns a vector of predictions
         if self._regmode:
@@ -106,6 +134,7 @@ class Model(DataSet):
         return j
 
     def _gradient_descent(self):
+        """This performs the gradient descent on all weights"""
         error = self._training_predictions() - self.y
         self._costfunction(error)
 
@@ -120,6 +149,7 @@ class Model(DataSet):
             self.opt_theta -= (self.alpha / self.m) * (self.x.T.dot(error))
 
     def _build_model(self):
+        """This iterates over iter_num and performs the gradient descent until convergence is reached"""
         for i in range(self.iters):
             self._gradient_descent()
             self.iter_num = i + 1
@@ -133,6 +163,12 @@ class Model(DataSet):
         self.mse = 2*float(self.jlist[-1])
 
     def predict(self, features: np.array, withbias: bool = False) -> np.array:   # pass features without bias unit
+        """
+        Predicts the outcome of certain features based on the created model.
+        It's important to know that this function appends x0 (bias unit) to the passed features by default,
+        unless the bias unit is already present (usually happens only within the model creation) and then
+        'withbias' value should be set to True.
+        """
         if features.dtype != float:
             raise TypeError("Prediction features must be passed as float type")
 
@@ -147,6 +183,10 @@ class Model(DataSet):
         return predictions
 
     def _convert_thetas(self):
+        """
+        When using normalization, this function converts Theta to their version for unscaled data.
+        The intention of this is mainly to have a hypothesis function that corresponds to an unscaled data set.
+        """
         self.scaledtheta = self.opt_theta
         feats = self.x[0, :]  # removing x0=1 as (theta0*x0 = theta0) anyway
         prediction = self.predict(feats, withbias=True)
@@ -160,6 +200,7 @@ class Model(DataSet):
         self.opt_theta[0, :] = theta0[0]  # inserting theta0 into theta matrix
 
     def _calc_r2(self):
+        """Calculating r squared"""
         error = abs(self.y) - abs((self.x.dot(self.opt_theta)))  # note: this must use old thetas!
         modelvar = np.var(error)
         meanvar = np.mean(self.y)
@@ -167,6 +208,10 @@ class Model(DataSet):
         return (meanvar-modelvar)/meanvar
 
     def visualize(self, save: bool = False):  # only for n=2 (with intercept)
+        """
+        Visualize the model (using the converted Theta if normalization = True)
+        The visualization is of x1 against the prediction. Note that multivariate representation is not available ATM
+        """
         if self.n > 2:
             raise Exception(f"Visualization of n > 2 models is currently unavailable")
 
@@ -184,6 +229,7 @@ class Model(DataSet):
         plt.show()
 
     def _generate_hypothesis(self):
+        """Generating a string of the hypothesis function"""
         xt = str(f"({self.intercept})") + str([f"+({self.opt_theta[i, :]})*x{i}"
                                                for i in range(1, len(self.opt_theta))])
         xt = xt.replace("[", "")
@@ -195,15 +241,4 @@ class Model(DataSet):
 
 
 if __name__ == "__main__":
-    andrewsdataset = load_data("ex1data1.txt")  # import external dataset
-    dataset_array2 = np.array([[2, 5],  # testing a small dataset
-                               [3, 7],
-                               [4, 9],
-                               [5, 11]], dtype=float)
-
-    mod = Model(dataset_array2, normalization=True)
-    mod.visualize(save=True)
-    
-    featuersss = np.array([[10.0],
-                           [11.0]], dtype=float)
-    result = mod.predict(featuersss)
+    pass
