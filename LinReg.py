@@ -2,8 +2,8 @@
 This module will be used to process data and try to create a linear regression model based on it
 The following methods will be available:
 Importing a data set from a text file
-Normalization - scaling all features to be have a mean of 0 and dividing by standard deviation
-Regularization - smoothing out the line to avoid over-fitting
+Normalization - scaling all features to have a mean of 0 and dividing by it's standard deviation
+Regularization - smoothing out the 'line' to avoid over-fitting
 Setting custom initial weights (theta), lambda (regularization), number of iterations, convergence, etc...
 Note that this model creation supports multivariate linear regression as well as single variable.
 """
@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 def load_data(path: str) -> np.array:
     """
-    Import features from a text file that has them stored in the following format: x1, x2
+    Import features from a text file that has them stored in the following format: x1, x2 .... Xn where xn = output
     the format of the examples matrix will be numpy.array
     """
     dataset = open(f"{path}", "r")
@@ -28,7 +28,7 @@ class DataSet:  # pass a matrix of (dimensions = [examples*features])
     """
     Every model instantiation will go through here to give the data set an initial processing.
     Checking the format of the input, defining whether regularization is used, scaling
-    all features using normalization if set to True, and adding bias unit '1' as x0.
+    all features using normalization if set to True, and adding a bias unit '1' as x0.
     """
     def __init__(self, data_set: np.array, theta: list = None, normalization: bool = False,
                  regularization: bool = False, lmbda: float = 0.3):
@@ -92,7 +92,7 @@ class Model(DataSet):
     Eventually the model object will have a representation of the hypothesis function in a string format,
     and many attributes that represent the model's properties, such as "mse", "r squared", intercept
     and cost function value.
-    Note that this model is considered to have been converged after error1/error2 are less than 'convergence' value.
+    Note that the model is considered 'converged' after error1/error2 are less than 'convergence' value.
     'Convergence' value is 1.000000001 by default but can be given another value to achieve better or worse precision.
     """
     def __init__(self, data_set: np.array, theta: list = None, normalization: bool = False,
@@ -124,7 +124,7 @@ class Model(DataSet):
         return h.reshape(self.y.shape[0], 1)  # returns prediction for each sample
 
     def _costfunction(self, error):
-        """This is the cost function. Note that are values are stored in a special list. Last value is index[-1]"""
+        """This is the cost function. Note that values are stored in a special list. Last value is index[-1]"""
         error = error**2
         j = 0.5*(1/self.m)*error  # returns a vector of predictions
         if self._regmode:
