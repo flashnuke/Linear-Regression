@@ -134,7 +134,10 @@ class Model(DataSet):
     def _gradient_descent(self, output: int):
         pred = self._training_predictions()
         real = self.y[output-1, :]  # minus one because idx starts from zero
-        error = (-real*np.log(pred))-((1-real)*np.log(1-pred))
+        # print(real)
+        # print(pred)
+        # error = (-real*np.log(pred))-((1-real)*np.log(1-pred))
+        error = real - pred
 
         self._costfunction(error)
 
@@ -146,11 +149,7 @@ class Model(DataSet):
             regterm[:, 0] = 0
             self.opt_theta -= self.alpha * (((1 / self.m) * self.x.T.dot(error)) + regterm)
         else:
-            # print(self.m.shape)
-            print(self.x.shape)
-            print(self.x)
-            print(error)
-            self.opt_theta -= (self.alpha / self.m) * (self.x.T.dot(error))
+            self.opt_theta -= (self.alpha / self.m) * (self.x.T.dot(error.T))
 
     def _build_model(self):
         thetas = self.theta
@@ -242,11 +241,11 @@ if __name__ == "__main__":
                                [4, 9],
                                [5, 11]], dtype=float)
 
-    mod = Model(andrewsdataset)
+    mod = Model(andrewsdataset, regularization=False)
     #
     # print(mod.r2)
     # mod.visualize(save=True)
-    # print(mod.opt_theta)
+    print(mod.opt_theta)
     # print(mod)
     # print(mod.hypothesis)
     # print(mod.stds)
