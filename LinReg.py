@@ -2,7 +2,7 @@
 This module will be used to process data and try to create a linear regression model based on it
 The following methods will be available:
 Importing a data set from a text file
-Normalization - scaling all features to have a mean of 0 and dividing by it's standard deviation
+Normalization - scaling all features to have a mean of 0 and dividing by its standard deviation
 Regularization - smoothing out the 'line' to avoid over-fitting
 Setting custom initial weights (theta), lambda (regularization), number of iterations, convergence, etc...
 Note that this model creation supports multivariate linear regression as well as single variable.
@@ -87,7 +87,7 @@ class DataSet:  # pass a matrix of (dimensions = [examples*features])
 
 class Model(DataSet):
     """
-    This class builds the model. The method used here is gradient descend with the intention of minimizing the
+    This class builds the model. The method used here is gradient descent with the intention of minimizing the
     cost function value. Note that all cost function values are stored in a special list.
     Eventually the model object will have a representation of the hypothesis function in a string format,
     and many attributes that represent the model's properties, such as "mse", "r squared", intercept
